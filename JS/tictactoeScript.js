@@ -1,4 +1,12 @@
 var turn = "o";
+const PLAYER_T ="o";
+const CPU_T = "x";
+var grid = [
+	["","",""],
+	["","",""],
+	["","",""],
+	];
+
 
 
 function createT(){
@@ -18,25 +26,21 @@ function createT(){
 
 window.onload = createT;
 
-
-
-$("table").on("click","td",function(){
-	var that = this;
+function moveAI(){
+	var move = $("td").not(".o,.x")[0];
+	move.classList.add("x");
+	if (checkWinner(move)){alert(checkWinner(move))}
+	toggleTurn();
+	;
+	}
 	
-  if ($(this).not(".x,.o").length!=0){
-    if (turn==="o"){
-      $(this).addClass("o");
-      
-    } else {
-      $(this).addClass("x");
-      
-    }
-	function checkWinner(){
-	  	
-		
-	  var col = $(that).attr("data-col");
-	  var row = $(that).attr("data-row");
-	  function diagonals(){
+function toggleTurn(){turn == "x" ? turn = "o":turn="x"}
+	
+function checkWinner(cell){
+	var col = $(cell).attr("data-col");
+	var row = $(cell).attr("data-row");
+	console.log(col);
+	function diagonals(){
 		var i = 0;
 		var k = 0;
 		var ccol = col;
@@ -46,23 +50,40 @@ $("table").on("click","td",function(){
 		while (bl.attr("class") == turn&&i<3){
 			i++
 			bl = $("td[data-col='"+(i)+"'][data-row='"+(2-i)+"']");
-		
-			
 		}
-		
 		
 		while (br.attr("class") == turn&&k<3){
-		    k++	
+			k++	
 			br = $("td[data-col='"+(2-k)+"'][data-row='"+(2-k)+"']");
 		}
-		console.log(i,k)
+		//console.log(i,k)
 		return (i==3||k==3);
-	  }
-	  if($("td[data-col='"+col+"']."+turn).length>=3||diagonals()){alert( turn + " won !" ); return}
-	  if($("td[data-row='"+row+"']."+turn).length>=3){alert(turn + " won !")}
+    }
+  
+  if($("td[data-col='"+col+"']."+turn).length>=3||diagonals()){return turn}
+  if($("td[data-row='"+row+"']."+turn).length>=3){return turn}
+  return grid.reduce((a,b)=>a.concat(b),[]).includes("")?false:null;
 	  
-  }
-	checkWinner();
-	turn == "x" ? turn = "o":turn="x";
+}
+
+
+
+$("table").on("click","td",function(){
+	var that = this;
+
+    if ($(this).not(".x,.o").length!=0){
+      if (turn==="o"){
+        $(this).addClass("o");
+      
+    } else {
+        $(this).addClass("x"); 
+    }
+	console.log(checkWinner(this));
+    if (checkWinner(this)){alert(checkWinner(this))};
+	toggleTurn();
+	grid = [];
+	$("tr").each(function(index,val){grid.push($(val).children().toArray().map(x=> x.className))} );
+	if (turn === CPU_T){moveAI()};
+	
   }
 })
